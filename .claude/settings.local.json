@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(true)",
+      "Bash(mv:*)",
+      "Bash(rm:*)",
+      "Bash(go mod:*)",
+      "Bash(make:*)"
+    ],
+    "deny": []
+  }
+}

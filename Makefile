@@ -1,18 +1,12 @@
 all: build
 
-build: bin gosmc bactl
-
-gosmc: bin
-	go build \
-	    -ldflags="-s -w" \
-	    -o bin/gosmc \
-	    cmd/main.go
+build: bin bactl
 
 bactl: bin
 	go build \
 	    -ldflags="-s -w" \
 	    -o bin/bactl \
-	    cmd/bactl.go
+	    main.go
 
 install: bactl
 	sudo cp bin/bactl /usr/local/bin/bactl
