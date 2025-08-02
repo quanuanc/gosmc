@@ -1,52 +1,107 @@
-# gosmc
+# bactl - Battery Charging Control for Apple Silicon MacBooks
 
-A Go library to read and write Apple SMC on Macs.
+A command-line tool for controlling battery charging on Apple Silicon MacBooks running macOS Tahoe, built using the gosmc library.
 
-This uses C-binding to Go, so you will need to use `cgo` for it to work.
+## Overview
+
+`bactl` provides fine-grained control over battery charging on supported Apple Silicon MacBooks. This tool directly interfaces with the System Management Controller (SMC) to enable or disable battery charging, which can be useful for:
+
+- Extending battery lifespan by preventing overcharging
+- Managing charging during extended desktop use
+- Battery health optimization
+
+## Requirements
+
+- macOS Tahoe with Apple Silicon
+- Root privileges (sudo access)
+- Compatible MacBook model with Tahoe firmware
+
+## Installation
+
+Build and install from source:
+
+```bash
+make bactl      # Build the binary
+make install    # Install to /usr/local/bin/bactl
+```
+
+Or build manually:
+
+```bash
+go build -ldflags="-s -w" -o bin/bactl cmd/bactl.go
+sudo cp bin/bactl /usr/local/bin/bactl
+sudo chmod +x /usr/local/bin/bactl
+```
 
 ## Usage
 
-run `go get github.com/charlie0129/gosmc`
+### Check Charging Status
+```bash
+sudo bactl status
+```
+Shows whether battery charging is currently enabled or disabled.
 
-```go
-package main
+### Enable Battery Charging
+```bash
+sudo bactl enable
+```
+Allows the battery to charge normally.
 
-import (
-	"fmt"
+### Disable Battery Charging
+```bash
+sudo bactl disable
+```
+Prevents the battery from charging while plugged in.
 
-	"github.com/charlie0129/gosmc"
-)
+### Check Compatibility
+```bash
+sudo bactl check
+```
+Verifies if your system supports charging control (detects Tahoe firmware).
 
-func main() {
-	c := gosmc.New()
+## Examples
 
-	// Open connection to SMC.
-	_ = c.Open()
+```bash
+# Check if your system supports charging control
+$ sudo bactl check
+Charging control is supported (Tahoe firmware detected)
 
-	// Close conncetion once we are done.
-	defer c.Close()
+# Check current charging status
+$ sudo bactl status
+Battery charging is ENABLED
 
-	// Write 0x2 to CH0B or CH0C (to disable battery charging)
-	_ = c.Write("CH0B", []byte{0x2})
+# Disable charging for extended desktop use
+$ sudo bactl disable
+Battery charging disabled
 
-	// Read value from CH0B
-	v, _ := c.Read("CH0B")
-}
+# Re-enable charging when needed
+$ sudo bactl enable
+Battery charging enabled
 ```
 
-## CLI
+## Uninstallation
 
-There is a command line program included to RW SMC. Run `make` to build it. The binary will be `bin/gosmc`.
-
-Example:
-
-```shell
-# Read from CH0B
-bin/gosmc -k CH0B
-# Write 0x02 to CH0B
-bin/gosmc -k CH0B -v 02
+```bash
+make uninstall
 ```
 
-## Future work
+## Technical Details
 
-Currently, it only does read and write using byte array. It provides no data conversion to common types like `int`, `float`, `string`. It can be beneficial to provide such conversions.
+- Uses SMC key `CHTE` (Tahoe charging control)
+- Enabled state: `0x00000000`
+- Disabled state: `0x01000000`
+- Requires direct SMC access through IOKit framework
+
+## Limitations
+
+- Only works on Apple Silicon MacBooks with Tahoe firmware
+- Requires root privileges for SMC access
+- Changes are temporary and reset on system restart
+- Not compatible with Intel-based Macs or older firmware versions
+
+## Safety Notes
+
+- This tool directly modifies SMC values
+- Use responsibly and understand the implications
+- Battery charging will resume automatically after system restart
+- Monitor battery levels when charging is disabled
