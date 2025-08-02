@@ -28,8 +28,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  bactl status    Check current charging state\n")
 		fmt.Fprintf(os.Stderr, "  bactl enable    Enable battery charging\n")
 		fmt.Fprintf(os.Stderr, "  bactl disable   Disable battery charging\n")
-		fmt.Fprintf(os.Stderr, "  bactl check     Check if charging control is supported\n")
-		fmt.Fprintf(os.Stderr, "  bactl help      Show this help message\n\n")
+		fmt.Fprintf(os.Stderr, "  bactl check     Check if charging control is supported\n\n")
 		fmt.Fprintf(os.Stderr, "Note: This tool requires root privileges and only works on macOS Tahoe with Apple Silicon.\n")
 	}
 
